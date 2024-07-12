@@ -1,17 +1,28 @@
 [tool.poetry]
-name = "template"
+name = "googlehacks"
 version = "0.1.0"
 description = ""
 authors = ["Mykhailo Briazkalo <mbriazka@uwaterloo.ca>"]
 readme = "README.md"
-packages = [{include = "template", from = "src"}]
+packages = [
+    {include = "backend", from = "src"},
+    {include = "config", from = "src"},
+    {include = "database", from = "src"},
+    {include = "gemini", from = "src"},
+    {include = "google_apis", from = "src"}
+]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 black = "^24.4.2"
 flake8 = "^7.1.0"
 isort = "^5.13.2"
 mypy = "^1.10.1"
+google-api-python-client = "^2.137.0"
+google-auth-httplib2 = "^0.2.0"
+google-auth-oauthlib = "^1.2.1"
+python-dotenv = "^1.0.1"
+flask = "^3.0.3"
 
 
 [tool.poetry.group.dev.dependencies]
