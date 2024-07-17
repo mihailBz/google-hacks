@@ -57,7 +57,7 @@
     </div>
 
     <script>
-        let accessToken = '';
+        let jwtToken = localStorage.getItem('jwtToken');
 
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -66,16 +66,28 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        accessToken = getUrlParameter('access_token');
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('access_token');
+            if (token) {
+                jwtToken = token;
+                localStorage.setItem('jwtToken', jwtToken);
+            }
+        };
 
-        function loginWithGoogle() {
+        async function loginWithGoogle() {
             window.location.href = '/authorize';
         }
 
         async function readCalendar() {
+            if (!jwtToken) {
+                alert('You need to login first.');
+                return;
+            }
+
             const response = await fetch('/api/read-calendar', {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${jwtToken}`
                 }
             });
 
@@ -84,13 +96,18 @@
         }
 
         async function addEvent() {
+            if (!jwtToken) {
+                alert('You need to login first.');
+                return;
+            }
+
             const summary = document.getElementById('event-summary').value;
 
             const response = await fetch('/api/add-event', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${jwtToken}`
                 },
                 body: JSON.stringify({
                     summary,
