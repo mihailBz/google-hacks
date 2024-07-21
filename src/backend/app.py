@@ -20,6 +20,7 @@ from googleapiclient.discovery import build
 
 from config import Config
 from database.models import UserCredentials, db
+from gemini.gemini_core import GeminiCore
 from utils.token_manager import get_credentials
 
 # todo refactor this
@@ -36,6 +37,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 jwt = JWTManager(app)
+gemini = GeminiCore()
 
 with app.app_context():
     db.create_all()
@@ -122,6 +124,16 @@ def test_read_calendar():
     calendar_service = build("calendar", "v3", credentials=creds)
     events = calendar_service.events().list(calendarId="primary").execute()
     return jsonify(events), 200
+
+
+@app.route("/api/chat", methods=["POST"])
+@jwt_required()
+def chat():
+    message = request.json.get("message")
+    if not message:
+        return jsonify({"error": "Message is required"}), 400
+    response = gemini.send_message(message)
+    return jsonify(response), 200
 
 
 if __name__ == "__main__":

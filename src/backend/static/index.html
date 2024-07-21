@@ -53,18 +53,18 @@
             <input type="text" id="event-summary" required>
             <button onclick="addEvent()">Add Event</button>
         </div>
+        <div class="form-group">
+            <h2>Chat with Gemini</h2>
+            <label for="chat-input">Your Message:</label>
+            <textarea id="chat-input" rows="3"></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
         <pre id="response"></pre>
     </div>
 
     <script>
         let jwtToken = localStorage.getItem('jwtToken');
 
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            const results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -119,6 +119,28 @@
                         dateTime: new Date(new Date().getTime() + 30 * 60 * 1000).toISOString(),
                         timeZone: 'UTC'
                     }
+                })
+            });
+
+            const data = await response.json();
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function sendMessage() {
+            if (!jwtToken) {
+                alert('You need to login first.');
+                return;
+            }
+
+            const message = document.getElementById('chat-input').value;
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+                body: JSON.stringify({
+                    message
                 })
             });
 
