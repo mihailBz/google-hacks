@@ -23,6 +23,7 @@ class GeminiCore:
             staging_bucket=self.staging_bucket
         )
 
+        self._set_up()
         # genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         # self.model = genai.GenerativeModel("gemini-1.5-flash")
         # self.chat = self.model.start_chat(history=[])
@@ -49,7 +50,6 @@ class GeminiCore:
         Returns:
             str: The LLM response.
         """
-        self._set_up()
         return self.chain.invoke({"text": question}).content
     
     # def send_message(self, message):
